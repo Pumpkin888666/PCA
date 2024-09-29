@@ -1,0 +1,70 @@
+<blockquote class="layui-elem-quote layui-text">
+    建议使用电脑打开，移动端可能造成显示异常，或浏览器UA设置为PC。
+    <a href="https://cn.bing.com/search?q=手机浏览器UA如何设置成PC">如何设置？</a>
+    <br>
+    版本默认禁用状态，请配置好更新包后再启用版本。否则用户可能收到更新通知。
+</blockquote>
+<form class="layui-form" action="" layui-filter="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">版本号</label>
+        <div class="layui-input-block">
+            <input type="text" id="version" autocomplete="off" placeholder="必填[4位数字]" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">所属APP</label>
+        <div class="layui-input-block">
+            <select name="appof" id="appof" lay-filter="appof">
+                <option value="">请选择APP</option>
+            </select>
+        </div>
+    </div>
+</form>
+<button class="layui-btn" id="submitBtn">立即提交</button>
+<script>
+    ajax({ do: 'getAppList' }, function (res) {
+        app = res.data.items;
+        if (app.length == 0) {
+            dataError('用户名下没有软件');
+        }
+        for (i = 0; i < app.length; i++) {
+            $("#appof").append("<option value='" + app[i].identification + "'>" + app[i].appname + "</option>");
+        }
+        // 防止渲染比数据快导致添加数据失败
+        layui.use(['form'], function () {
+            var form = layui.form
+            form.render();
+        });
+    });
+
+    $("#submitBtn").click(function () {
+        version = $("#version").val();
+        appof = $("#appof").val();
+        if (version.length == 0 || appof.length == 0) {
+            $.alert({
+                title: 'Warn',
+                content: '必填参数没有填写完整！',
+                icon: 'fa fa-exclamation-circle',
+                type: 'red',
+                buttons: {
+                    关闭: function () { }
+                }
+            })
+            return false;
+        }
+        ajax({
+            do: 'addAppVersion',version: version,appof: appof},function(res){
+                $.alert({
+                title: '成功',
+                content: '版本添加成功',
+                icon: 'fa fa-smile-o',
+                type: 'green',
+                buttons: {
+                    ok: function () {
+                        layui.table.reload('currentTableId', {});
+                    }
+                }
+            })
+            })
+    })
+</script>

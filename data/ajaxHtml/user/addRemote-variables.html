@@ -1,0 +1,62 @@
+<blockquote class="layui-elem-quote layui-text">
+    建议使用电脑打开，移动端可能造成显示异常，或浏览器UA设置为PC。
+    <a href="https://cn.bing.com/search?q=手机浏览器UA如何设置成PC">如何设置？</a>
+</blockquote>
+<form class="layui-form" action="" layui-filter="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">变量名</label>
+        <div class="layui-input-block">
+            <input type="text" id="name" autocomplete="off" placeholder="必填 <=20字符" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">变量值</label>
+        <div class="layui-input-block">
+            <input type="text" id="content" autocomplete="off" placeholder="选填 <=100字符" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <textarea type="text" id="notes" autocomplete="off" placeholder="可不填 <=50字符"
+                class="layui-input"></textarea>
+        </div>
+    </div>
+</form>
+<button class="layui-btn" id="submitBtn">立即提交</button>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form
+        form.render();
+    });
+    $("#submitBtn").click(function () {
+        name = $("#name").val();
+        content = $("#content").val();
+        notes = $("#notes").val();
+        if (name.length < 1) {
+            $.alert({
+                title: 'Warn',
+                content: '变量名必填',
+                icon: 'fa fa-exclamation-circle',
+                type: 'red',
+                buttons: {
+                    关闭: function () { }
+                }
+            })
+            return false;
+        }
+        ajax({ do: 'addRemote-variables', name: name, content: content, notes: notes }, function (res) {
+            $.alert({
+                title: '成功',
+                content: '远程变量添加成功',
+                icon: 'fa fa-smile-o',
+                type: 'green',
+                buttons: {
+                    ok: function () {
+                        layui.table.reload('currentTableId', {});
+                    }
+                }
+            })
+        })
+    })
+</script>

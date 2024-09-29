@@ -1,0 +1,56 @@
+<form class="layui-form" action="" lay-filter="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">软件开关</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="AppSwitch" id="AppSwitch" lay-filter="AppSwitch" lay-skin="switch" lay-text="开|关" checked>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">云公告</label>
+        <div class="layui-input-block">
+            <textarea type="text" name="notice" id="notice" lay-filter="notice" autocomplete="off" placeholder="可不填 <=500字符" class="layui-input"></textarea>
+        </div>
+    </div>
+</form>
+<button class="layui-btn" id="submitBtn">立即提交</button>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form;
+        form.render();
+        ajax({ do: 'getAppInformation', identification: identification }, function (res) {
+            form.val('form', {
+                'AppSwitch': res.data.appswitch,
+                'notice':res.data.notice
+            });
+        });
+    });
+    $("#submitBtn").click(function () {
+        AppSwitch = $("#AppSwitch").prop('checked') ? 1 : 0;
+        notice = $("#notice").val();
+        if(notice.length > 500){
+            $.alert({
+                title: 'Warn',
+                content: '公告字符不能大于500字符!',
+                type: 'red',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    关闭: function () {}
+                }
+            })
+            return false;
+        }
+        ajax({do:'setAppInformation', identification: identification,AppSwitch:AppSwitch,notice:notice},function(res){
+            $.alert({
+                title:'成功',
+                content:'提交成功',
+                type:'green',
+                icon:'fa fa-smile-o',
+                buttons:{
+                    ok:function(){
+                        layui.table.reload('currentTableId', {});
+                    }
+                }
+            })
+        })
+    })
+</script>

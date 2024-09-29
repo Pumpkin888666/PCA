@@ -1,0 +1,170 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main">
+
+        <form class="layui-form" action="" layui-filter="form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">筛选APP</label>
+                <div class="layui-input-block">
+                    <!-- 这里id是appof_table是为了防止添加版本时id对冲导致功能异常 -->
+                    <select name="appof_table" id="appof_table" lay-filter="appof_table">
+                        <option value="">请选择APP</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加版本 </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="jscript:layui.table.reload('currentTableId', {});;">
+                    刷新表 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+        <blockquote class="layui-elem-quote">
+            <p>注意：</p>
+            <ol>
+                <li>1.版本更新的时候是一级一级更新的，例如用户现在是1000版本，但是你已经发了1003，用户会先更新到1002在到1003，所以更新时只用写一级的更新包。</li>
+                <li>2.更新包必须是压缩包，包内有两个文件，一个是‘update.zip’是直接放在根目录下解压就可以更新文件的，新版本那个文件动了或多了就加进去，所处位置必须正确，确保直接根目录解压能覆盖更新，再就是‘update.sql’更新数据库</li>
+                <li>3.安装包是项目的所有，可以直接下载安装。</li>
+                <li>4.PCA不会检查你设置的文件合不合规，你乱设置只会更新失败。</li>
+                <li>5.版本号最好按顺序设置，SDK获取时会获取最新版本和下一版本升级，版本升级按时间顺序排列，如果你的顺序是1000/1002/1001，用户是1000版本，他在获取更新时会显示最新版本1001下一版本1002。</li>
+            </ol>
+        </blockquote>
+        <hr>
+        <strong style="color: red;">更新需谨慎！错更数据无法挽救！更新前请做好一切测试工作！</strong>
+    </div>
+</div>
+
+<script>
+    ajax({ do: 'getAppList' }, function (res) {
+        app = res.data.items;
+        for (i = 0; i < app.length; i++) {
+            $("#appof_table").append("<option value='" + app[i].identification + "'>" + app[i].appname + "</option>");
+        }
+        // 防止渲染比数据快导致添加数据失败
+        layui.use(['form'], function () {
+            var form = layui.form
+            form.render();
+            form.on('select(appof_table)', function (data) {
+                layui.table.reload('currentTableId', {
+                    where: {
+                        'appof':$("#appof_table").val(),
+                    }
+                });
+            });
+        });
+    });
+    layui.use(['form', 'table', 'miniPage', 'element'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            miniPage = layui.miniPage;
+
+        // 渲染
+        table.render({
+            elem: '#currentTableId',
+            url: '/ajax.php?do=getAppVersion',
+            toolbar: '#toolbar',
+            response: {
+                code: 0
+            },
+            parseData: function (res) {
+                return {
+                    "code": res.code,
+                    "msg": res.msg,
+                    "count": res.data.count,
+                    "data": res.data.items
+                };
+            },
+            cols: [[
+                { field: 'version', title: '版本号', width: 120 },
+                { field: 'identification', title: '版本唯一标识', width: 300 },
+                { field: 'appof', title: '所属软件', width: 300 },
+                { field: 'create_time', title: '版本创建时间', width: 300 },
+                { field: 'switch', title: '可用状态', width: 200 },
+                { field: 'only_role', title: '仅角色获取', width: 200 },
+                { title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center" }
+            ]],
+            page: true,
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            skin: 'line'
+        });
+
+        /**
+         * toolbar事件监听
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            console.log(obj.event)
+            switch (obj.event) {
+                case 'add':
+                    ajaxHtml('创建版本', 'addAppVersion.html');
+                    break;
+            }
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            console.log(data)
+            if (obj.event === 'edit') {
+                identification = data.identification;
+                ajaxHtml('编辑版本', 'editAppVersion.html');
+                return false;
+            } else if (obj.event === 'delete') {
+                //获取浏览器navigator对象的userAgent属性（浏览器用于HTTP请求的用户代理头的值）
+                var info = navigator.userAgent;
+                //通过正则表达式的test方法判断是否包含“Mobile”字符串
+                var isPhone = /mobile/i.test(info);
+                //如果包含“Mobile”（是手机设备）则返回true
+                $.confirm({
+                    title: '删除版本',
+                    content: '请注意！你正在<strong style="color:red">删除版本[版本标识:' + data.identification + ']</strong>，此操作<strong style="color:red">不可逆</strong>！' + (isPhone ? '' : '按下键盘Y进行下一步操作。'),
+                    type: 'red',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        我点错了: function () { },
+                        确定删除: {
+                            isHidden: isPhone ? false : true, // 隐藏按钮 仅手机端显示该按钮
+                            keys: ['y'],
+                            action: function () {
+                                $.confirm({
+                                    title: '二级密码验证',
+                                    content: '请输入你的二级密码进行身份验证。' + '<br><input type="password" id="secondPssword" autocomplete="off" placeholder="必填" class="layui-input">',
+                                    type: 'red',
+                                    buttons: {
+                                        我点错了: function () { },
+                                        确认删除: function () {
+                                            secondPassword = $("#secondPssword").val();
+                                            ajax({ do: 'deleteAppVersion', secondPassword: secondPassword, versionidentification: data.identification }, function (res) {
+                                                $.alert({
+                                                    title: '成功',
+                                                    content: '版本删除成功',
+                                                    icon: 'fa fa-smile-o',
+                                                    type: 'green',
+                                                    buttons: {
+                                                        ok: function () {
+                                                            layui.table.reload('currentTableId', {});
+                                                        }
+                                                    }
+                                                })
+                                            })
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                })
+            }
+        });
+
+    });
+</script>

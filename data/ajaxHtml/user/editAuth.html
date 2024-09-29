@@ -1,0 +1,79 @@
+<form class="layui-form" lay-filter="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">授权开关</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="AuthSwitch" id="AuthSwitch" lay-filter="AuthSwitch" lay-skin="switch" lay-text="开|关">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">添加时间</label>
+        <div class="layui-input-block">
+            <input type="add_auth_time" id="auth_time" autocomplete="off" placeholder="永久随便填 否则必填" class="layui-input">
+            <select name="add_auth_time_type" id="auth_time_type" lay-filter="appof">
+                <option value="">选择时间单位</option>
+                <option value="minute">分钟</option>
+                <option value="hour">小时</option>
+                <option value="day">天</option>
+                <option value="month">月</option>
+                <option value="year">年</option>
+                <option value="forever">永久</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">软件角色</label>
+        <div class="layui-input-block">
+            <input type="text" id="role" name="role" lay-filter="role" autocomplete="off" placeholder="必填" class="layui-input">
+        </div>
+    </div>
+</form>
+<button class="layui-btn" id="submitBtn">立即提交</button>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form;
+        form.render();
+        ajax({ do: 'getAuthInformation', auth_code: auth_code }, function (res) {
+            form.val('form', {
+                'AuthSwitch': res.data.authswitch,
+                'role': res.data.role
+            });
+        });
+    });
+
+    $("#submitBtn").click(function () {
+        AuthSwitch = $("#AuthSwitch").prop('checked') ? 1 : 0;
+        auth_time = $("#auth_time").val();
+        auth_time_type = $("#auth_time_type").val();
+        role = $("#role").val();
+        if (role.length == 0) {
+            $.alert({
+                title: 'Warn',
+                content: '必填参数没有填写完整！',
+                icon: 'fa fa-exclamation-circle',
+                type: 'red',
+                buttons: {
+                    关闭: function () { }
+                }
+            })
+            return false;
+        }
+        if (auth_time.length == 0) {
+            auth_time = 0;
+        }
+        ajax({
+            do: 'setAuthInformation', auth_time: auth_time, auth_time_type: auth_time_type, role: role, auth_code: auth_code, AuthSwitch: AuthSwitch
+        }, function (res) {
+            $.alert({
+                title: '成功',
+                content: '修改成功',
+                icon: 'fa fa-smile-o',
+                type: 'green',
+                buttons: {
+                    ok: function () {
+                        layui.table.reload('currentTableId', {});
+                    }
+                }
+            })
+        })
+    })
+</script>

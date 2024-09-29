@@ -1,0 +1,51 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main">
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend>API设置</legend>
+        </fieldset>
+
+        <form class="layui-form" action="" lay-filter="form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">个人API开关</label>
+                <div class="layui-input-block">
+                    <input type="checkbox" name="ApiSwitch" lay-filter="ApiSwitch" lay-skin="switch" lay-text="开|关">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">个人唯一标识</label>
+                <div class="layui-input-block">
+                    <input type="text" name="identification" lay-verify="identification" autocomplete="off" placeholder="" class="layui-input" readonly>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form , layer = layui.layer;
+        form.render();
+        ajax({ do: 'getApiSet' },function(res){
+            form.val('form', {
+                'identification': res.data.identification,
+                'ApiSwitch': res.data.apiswitch
+            });
+        })
+        form.on('switch(ApiSwitch)', function (data) {
+            load = layer.load(1);
+            a = this.checked;
+            ajax({
+                do: 'setApiSet',
+                model: 'apiswitch',
+                now: this.checked == true ? 1 : 0
+            },function(res){
+                layer.close(load);
+                if (a) {
+                    showMsg('API设置打开成功，名下所有app可以接入api！', 'success', 2000)
+                } else {
+                    showMsg('API设置关闭成功，名下所有app禁止接入api！', 'warning', 2000)
+                }
+            })
+        });
+    });
+</script>

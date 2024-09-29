@@ -1,0 +1,160 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main">
+
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加APP </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="openAllApp"> 一键打开所有APP </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="closeAllApp"> 一键关闭所有APP </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="jscript:layui.table.reload('currentTableId', {});;"> 刷新表 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+        <hr>
+        <strong style="color: red;">不要手贱点随便删除软件！软件一经删除无法找回！</strong>
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'table', 'miniPage', 'element'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            miniPage = layui.miniPage;
+
+        // 渲染
+        table.render({
+            elem: '#currentTableId',
+            url: '/ajax.php?do=getAppList',
+            toolbar: '#toolbar',
+            response: {
+                code: 0
+            },
+            parseData: function (res) {
+                return {
+                    "code": res.code,
+                    "msg": res.msg,
+                    "count": res.data.count,
+                    "data": res.data.items
+                };
+            },
+            cols: [[
+                { field: 'appname', title: '软件名', width: 120 },
+                { field: 'identification', title: '软件唯一标识', width: 300 },
+                { field: 'appkey', title: '软件密钥', width: 300 },
+                { field: 'create_time', title: '软件创建时间', width: 300 },
+                { field: 'switch', title: '软件状态', width: 300 },
+                { title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center" }
+            ]],
+            page: true,
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            skin: 'line'
+        });
+
+        /**
+         * toolbar事件监听
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            console.log(obj.event)
+            switch(obj.event){
+                case 'add':
+                    ajaxHtml('创建APP', 'addApp.html');
+                    break;
+                case 'openAllApp':
+                    ajax({ do: 'AppQuickActions', Actions: 'openAllApp' }, function (res) {
+                        $.alert({
+                            title: '成功',
+                            content: 'APP<span style="color:green">一键打开</span>成功',
+                            icon: 'fa fa-smile-o',
+                            type: 'green',
+                            buttons: {
+                                ok: function () {
+                                    layui.table.reload('currentTableId', {});
+                                }
+                            }
+                        })
+                    })
+                    break;
+                case 'closeAllApp':
+                    ajax({ do: 'AppQuickActions', Actions: 'closeAllApp' }, function (res) {
+                        $.alert({
+                            title: '成功',
+                            content: 'APP<span style="color:red">一键关闭</span>成功',
+                            icon: 'fa fa-smile-o',
+                            type: 'green',
+                            buttons: {
+                                ok: function () {
+                                    layui.table.reload('currentTableId', {});
+                                }
+                            }
+                        })
+                    })
+                    break;
+            }
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            console.log(data)
+            if (obj.event === 'edit') {
+                identification = data.identification;
+                ajaxHtml('编辑应用', 'editApp.html');
+                return false;
+            } else if (obj.event === 'delete') {
+                //获取浏览器navigator对象的userAgent属性（浏览器用于HTTP请求的用户代理头的值）
+                var info = navigator.userAgent;
+                //通过正则表达式的test方法判断是否包含“Mobile”字符串
+                var isPhone = /mobile/i.test(info);
+                //如果包含“Mobile”（是手机设备）则返回true
+                $.confirm({
+                    title: '删除应用',
+                    content: '请注意！你正在<strong style="color:red">删除软件[身份标识:' + data.identification + ']</strong>，软件下所有<strong style="color:red">版本及授权</strong>也会删除，<strong style="color:red">此操作不可逆</strong>！'+ (isPhone ? '' : '按下键盘Y进行下一步操作。'),
+                    type: 'red',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        我点错了: function () { },
+                        确定删除: {
+                            isHidden: isPhone ? false : true, // 隐藏按钮 仅手机端显示该按钮
+                            keys: ['y'],
+                            action: function () {
+                                $.confirm({
+                                    title: '二级密码验证',
+                                    content: '请输入你的二级密码进行身份验证。' + '<br><input type="password" id="secondPssword" autocomplete="off" placeholder="必填" class="layui-input">',
+                                    type: 'red',
+                                    buttons: {
+                                        我点错了: function () { },
+                                        确认删除: function () {
+                                            secondPassword = $("#secondPssword").val();
+                                            ajax({ do: 'deleteApp', secondPassword: secondPassword, appidentification: data.identification }, function (res) {
+                                                $.alert({
+                                                    title: '成功',
+                                                    content: '软件删除成功',
+                                                    icon: 'fa fa-smile-o',
+                                                    type: 'green',
+                                                    buttons: {
+                                                        ok: function () {
+                                                            layui.table.reload('currentTableId', {});
+                                                        }
+                                                    }
+                                                })
+                                            })
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                })
+            }
+        });
+
+    });
+</script>

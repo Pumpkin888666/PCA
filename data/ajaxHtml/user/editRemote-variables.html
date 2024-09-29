@@ -1,0 +1,66 @@
+<form class="layui-form" action="" lay-filter="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">变量状态</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="varSwitch" id="varSwitch" lay-filter="varSwitch" lay-skin="switch"
+                lay-text="开|关" checked>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">变量值</label>
+        <div class="layui-input-block">
+            <input type="text" name="content" id="content" lay-filter="content" autocomplete="off" placeholder="可不填 <=100字符" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <textarea type="text" name="notes" id="notes" lay-filter="notes" autocomplete="off"
+                placeholder="可不填 <=50字符" class="layui-input"></textarea>
+        </div>
+    </div>
+</form>
+<button class="layui-btn" id="submitBtn">立即提交</button>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form;
+        form.render();
+        ajax({ do: 'getRemote-variablesInformation', name: name }, function (res) {
+            form.val('form', {
+                'varSwitch': res.data.varSwitch,
+                'content': res.data.content,
+                'notes': res.data.notes
+            });
+        });
+    });
+    $("#submitBtn").click(function () {
+        varSwitch = $("#varSwitch").prop('checked') ? 1 : 0;
+        content = $("#content").val();
+        notes = $("#notes").val();
+        if (notes.length > 50) {
+            $.alert({
+                title: 'Warn',
+                content: '备注字符不能大于50字符!',
+                type: 'red',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    关闭: function () { }
+                }
+            })
+            return false;
+        }
+        ajax({ do: 'setRemote-variablesInformation', name: name, varSwitch: varSwitch, notes: notes,content:content }, function (res) {
+            $.alert({
+                title: '成功',
+                content: '提交成功',
+                type: 'green',
+                icon: 'fa fa-smile-o',
+                buttons: {
+                    ok: function () {
+                        layui.table.reload('currentTableId', {});
+                    }
+                }
+            })
+        })
+    })
+</script>

@@ -1,0 +1,90 @@
+<form class="layui-form" action="" lay-filter="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">版本开关</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="AppVersionSwitch" id="AppVersionSwitch" lay-filter="AppVersionSwitch"
+                lay-skin="switch" lay-text="开|关">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">仅角色获取</label>
+        <div class="layui-input-block">
+            <input type="number" id="only_role" lay-filter="only_role" name="only_role" autocomplete="off" placeholder="必填[-1为全部角色可以获取]" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">更新文件</label>
+        <div class="layui-input-block">
+            <select name="update_file" id="update_file" lay-filter="update_file">
+                <option value="">请选择文件</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">安装包</label>
+        <div class="layui-input-block">
+            <select name="install_file" id="install_file" lay-filter="install_file">
+                <option value="">请选择文件</option>
+            </select>
+        </div>
+    </div>
+
+</form>
+<button class="layui-btn" id="submitBtn">立即提交</button>
+<script>
+
+    ajax({ do: 'getAppVersionInformation', identification: identification }, function (res) {
+        update_file = res.data.update_file;
+        install_file = res.data.install_file;
+        versionswitch = res.data.versionswitch;
+        only_role = res.data.only_role;
+        ajax({ do: 'getUserFileAll' }, function (res) {
+            file = res.data.items;
+            for (i = 0; i < file.length; i++) {
+                if (file[i].filename == update_file) {
+                    $("#update_file").append("<option value='" + file[i].filename + "' selected>" + file[i].filename + "</option>");
+                } else {
+                    $("#update_file").append("<option value='" + file[i].filename + "'>" + file[i].filename + "</option>");
+                }
+                if (file[i].filename == install_file) {
+                    $("#install_file").append("<option value='" + file[i].filename + "' selected>" + file[i].filename + "</option>");
+                } else {
+                    $("#install_file").append("<option value='" + file[i].filename + "'>" + file[i].filename + "</option>");
+                }
+
+            }
+            layui.use(['form'], function () {
+                var form = layui.form;
+                form.render();
+                form.val('form', {
+                    'AppVersionSwitch': versionswitch,
+                    'only_role': only_role,
+                });
+
+            });
+
+        });
+    });
+
+
+    $("#submitBtn").click(function () {
+        versionswitch = $("#AppVersionSwitch").prop('checked') ? 1 : 0;
+        update_file = $("#update_file").val();
+        install_file = $("#install_file").val();
+        only_role = $("#only_role").val();
+
+        ajax({ do: 'setAppVersionInformation', identification: identification, versionswitch: versionswitch, update_file: update_file, install_file: install_file, only_role: only_role }, function (res) {
+            $.alert({
+                title: '成功',
+                content: '提交成功',
+                type: 'green',
+                icon: 'fa fa-smile-o',
+                buttons: {
+                    ok: function () {
+                        layui.table.reload('currentTableId', {});
+                    }
+                }
+            })
+        })
+    })
+</script>

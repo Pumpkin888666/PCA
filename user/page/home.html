@@ -1,0 +1,462 @@
+<style>
+    .welcome .layui-card {
+        border: 1px solid #f2f2f2;
+        border-radius: 5px;
+    }
+
+    .welcome .icon {
+        margin-right: 10px;
+        color: #1aa094;
+    }
+
+    .welcome .icon-cray {
+        color: #ffb800 !important;
+    }
+
+    .welcome .icon-blue {
+        color: #1e9fff !important;
+    }
+
+    .welcome .icon-tip {
+        color: #ff5722 !important;
+    }
+
+    .welcome .layuimini-qiuck-module {
+        text-align: center;
+        margin-top: 10px
+    }
+
+    .welcome .layuimini-qiuck-module a i {
+        display: inline-block;
+        width: 100%;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+        border-radius: 2px;
+        font-size: 30px;
+        background-color: #F8F8F8;
+        color: #333;
+        transition: all .3s;
+        -webkit-transition: all .3s;
+    }
+
+    .welcome .layuimini-qiuck-module a cite {
+        position: relative;
+        top: 2px;
+        display: block;
+        color: #666;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        font-size: 14px;
+    }
+
+    .welcome .welcome-module {
+        width: 100%;
+        height: 210px;
+    }
+
+    .welcome .panel {
+        background-color: #fff;
+        border: 1px solid transparent;
+        border-radius: 3px;
+        -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .05)
+    }
+
+    .welcome .panel-body {
+        padding: 10px
+    }
+
+    .welcome .panel-title {
+        margin-top: 0;
+        margin-bottom: 0;
+        font-size: 12px;
+        color: inherit
+    }
+
+    .welcome .label {
+        display: inline;
+        padding: .2em .6em .3em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: .25em;
+        margin-top: .3em;
+    }
+
+    .welcome .layui-red {
+        color: red
+    }
+
+    .welcome .main_btn>p {
+        height: 40px;
+    }
+
+    .welcome .layui-bg-number {
+        background-color: #F8F8F8;
+    }
+
+    .welcome .layuimini-notice:hover {
+        background: #f6f6f6;
+    }
+
+    .welcome .layuimini-notice {
+        padding: 7px 16px;
+        clear: both;
+        font-size: 12px !important;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.2s ease-in-out;
+    }
+
+    .welcome .layuimini-notice-title,
+    .layuimini-notice-label {
+        padding-right: 70px !important;
+        text-overflow: ellipsis !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+    }
+
+    .welcome .layuimini-notice-title {
+        line-height: 28px;
+        font-size: 14px;
+    }
+
+    .welcome .layuimini-notice-extra {
+        position: absolute;
+        top: 50%;
+        margin-top: -8px;
+        right: 16px;
+        display: inline-block;
+        height: 16px;
+        color: #999;
+    }
+</style>
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main welcome">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md8">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-header"><i class="fa fa-warning icon"></i>数据统计</div>
+                            <div class="layui-card-body">
+                                <div class="welcome-module">
+                                    <div class="layui-row layui-col-space10">
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-blue">实时</span>
+                                                        <h5>授权数统计</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="auth_num">loading...</h1>
+                                                        <small>所有软件总记录数</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-cyan">实时</span>
+                                                        <h5>软件数统计</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="app_num">loading...</h1>
+                                                        <small>当前用户总记录数</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-orange">实时</span>
+                                                        <h5>API连接数统计</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="api_num">loading...</h1>
+                                                        <small>当前用户总记录数</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-xs6">
+                                            <div class="panel layui-bg-number">
+                                                <div class="panel-body">
+                                                    <div class="panel-title">
+                                                        <span class="label pull-right layui-bg-green">实时</span>
+                                                        <h5>版本数统计</h5>
+                                                    </div>
+                                                    <div class="panel-content">
+                                                        <h1 class="no-margins" id="appversion_num">loading...</h1>
+                                                        <small>当前用户总记录数</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-header"><i class="fa fa-credit-card icon icon-blue"></i>快捷入口</div>
+                            <div class="layui-card-body">
+                                <div class="welcome-module">
+                                    <div class="layui-row layui-col-space10 layuimini-qiuck">
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="javascript:;" layuimini-content-href="page/Api/AppManage/applist.html"
+                                                data-title="软件管理" data-icon="fa fa-cube">
+                                                <i class="fa fa-cube"></i>
+                                                <cite>软件管理</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="javascript:;" layuimini-content-href="page/Api/AppManage/versionlist.html"
+                                                data-title="版本管理" data-icon="fa fa-list-ol">
+                                                <i class="fa fa-list-ol"></i>
+                                                <cite>版本管理</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="javascript:;" layuimini-content-href="page/Api/authlist.html"
+                                                data-title="授权管理" data-icon="fa fa-credit-card">
+                                                <i class="fa fa-credit-card"></i>
+                                                <cite>授权管理</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="javascript:;" layuimini-content-href="page/Api/Remote-variables.html"
+                                                data-title="远程变量" data-icon="fa fa-info">
+                                                <i class="fa fa-info"></i>
+                                                <cite>远程变量</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="javascript:;" layuimini-content-href="page/Api/Request-forwarding.html"
+                                                data-title="表单示例" data-icon="fa fa-share">
+                                                <i class="fa fa-share"></i>
+                                                <cite>远程转发</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="javascript:;" layuimini-content-href="page/upload/upload.html"
+                                                data-title="文件上传" data-icon="fa fa-cloud-upload">
+                                                <i class="fa fa-cloud-upload"></i>
+                                                <cite>文件上传</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="javascript:;" layuimini-content-href="page/upload/filelist.html"
+                                                data-title="文件列表" data-icon="fa fa-list-ul">
+                                                <i class="fa fa-list-ul"></i>
+                                                <cite>文件列表</cite>
+                                            </a>
+                                        </div>
+                                        <div class="layui-col-xs3 layuimini-qiuck-module">
+                                            <a href="javascript:;" layuimini-content-href="page/Api/apiset.html"
+                                                data-title="API设置" data-icon="fa fa-cog">
+                                                <i class="fa fa-cog"></i>
+                                                <cite>API设置</cite>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header"><i class="fa fa-line-chart icon"></i>报表统计[报表1分钟更新1次数据] - API连接</div>
+                            <div class="layui-card-body">
+                                <div id="echarts-records" style="width: 100%;min-height:500px"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-col-md4">
+
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-bullhorn icon icon-tip"></i>系统公告</div>
+                    <div class="layui-card-body layui-text" style="text-align: center;">
+                        <strong>Author Pumpkin</strong><br>
+                        <strong>Begin in 2023</strong>
+                    </div>
+                </div>
+
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-fire icon"></i>版本信息</div>
+                    <div class="layui-card-body layui-text">
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="100">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <td>系统名称</td>
+                                    <td>
+                                        PCA(PumpkinCloudApi)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>当前版本</td>
+                                    <td>v1.0</td>
+                                </tr>
+                                <tr>
+                                    <td>主要特色</td>
+                                    <td>数据加密安全 / 使用上手简单 / 界面清爽整洁</td>
+                                </tr>
+                                <tr>
+                                    <td>官网</td>
+                                    <td>
+                                        api.pumpkin8.cn
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>授权地址</td>
+                                    <td>
+                                        https://www.pumpkin8.cn/97.html
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-paper-plane-o icon"></i>作者心语</div>
+                    <div class="layui-card-body layui-text layadmin-text">
+                        <p>本系统使用了layui2.5.4,font-awesome-4.7.0,layuimini,jquery及一些衍生js,Puploader属于本人开发【可见技术很菜】使用起来有些别扭，再此特别鸣谢这些作者。</p>
+                        <p>作者开发本意是练习自己的编程技术，在开发中肯定有些许不足，所以请大家见谅。如有发现Bug，请发送邮件至邮箱<strong>aswdfgyhj@163.com</strong>请勿发送垃圾邮件，谢谢。</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    getHomeInformation();
+
+    layui.use(['layer', 'echarts'], function () {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            echarts = layui.echarts;
+
+        /**
+         * 查看公告信息
+         **/
+        $('body').on('click', '.layuimini-notice', function () {
+            var title = $(this).children('.layuimini-notice-title').text(),
+                noticeTime = $(this).children('.layuimini-notice-extra').text(),
+                content = $(this).children('.layuimini-notice-content').html();
+            var html = '<div style="padding:15px 20px; text-align:justify; line-height: 22px;border-bottom:1px solid #e2e2e2;background-color: #2f4056;color: #ffffff">\n' +
+                '<div style="text-align: center;margin-bottom: 20px;font-weight: bold;border-bottom:1px solid #718fb5;padding-bottom: 5px"><h4 class="text-danger">' + title + '</h4></div>\n' +
+                '<div style="font-size: 12px">' + content + '</div>\n' +
+                '</div>\n';
+            parent.layer.open({
+                type: 1,
+                title: '系统公告' + '<span style="float: right;right: 1px;font-size: 12px;color: #b1b3b9;margin-top: 1px">' + noticeTime + '</span>',
+                area: '300px;',
+                shade: 0.8,
+                id: 'layuimini-notice',
+                btn: ['查看', '取消'],
+                btnAlign: 'c',
+                moveType: 1,
+                content: html,
+                success: function (layero) {
+                    var btn = layero.find('.layui-layer-btn');
+                    btn.find('.layui-layer-btn0').attr({
+                        href: 'https://gitee.com/zhongshaofa/layuimini',
+                        target: '_blank'
+                    });
+                }
+            });
+        });
+
+        /**
+         * 报表功能
+         */
+        echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+        optionRecords = {};
+
+        // echarts 窗口缩放自适应
+        window.onresize = function () {
+            echartsRecords.resize();
+        }
+
+        function getHomeTableData() {
+            ajax({ do: 'getHomeTableData' }, function (res) {
+                optionRecords = {
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: res.data.data
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: res.data.series
+                };
+                echartsRecords.setOption(optionRecords);
+            })
+        }
+
+        getHomeTableData();
+
+        clearInterval(getHomeTableData_setInterval_variables);
+        getHomeTableData_setInterval_variables = setInterval(function () {
+            getHomeTableData();
+        }, 60000);
+
+    });
+
+    function getHomeInformation() {
+        ajax({ do: 'getHomeInformation' }, function (res) {
+            $("#auth_num").text(res.data.auth_num);
+            $("#app_num").text(res.data.app_num);
+            $("#api_num").text(res.data.api_num);
+            $("#appversion_num").text(res.data.appversion_num);
+        })
+    }
+
+
+    clearInterval(getHomeInformation_setInterval_variables);
+    var getHomeInformation_setInterval_variables = setInterval(function(){
+        getHomeInformation();
+    },30000);
+
+
+</script>

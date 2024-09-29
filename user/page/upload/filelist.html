@@ -1,0 +1,107 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main">
+
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="jscript:layui.table.reload('currentTableId', {});;"> 刷新表 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'table', 'miniPage', 'element'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            miniPage = layui.miniPage;
+
+        // 渲染
+        table.render({
+            elem: '#currentTableId',
+            url: '/ajax.php?do=getFileList',
+            toolbar: '#toolbar',
+            response: {
+                code: 0
+            },
+            parseData: function (res) {
+                return {
+                    "code": res.code,
+                    "msg": res.msg,
+                    "count": res.data.count,
+                    "data": res.data.items
+                };
+            },
+            cols: [[
+                { field: 'filename', title: '文件名', width: 600 },
+                { field: 'upload_time', title: '上传时间', width: 200 },
+                { field: 'ip', title: '上传IP', width: 200 },
+                { field: 'status', title: '状态', width: 100 },
+                { title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center" }
+            ]],
+            page: true,
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            skin: 'line'
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            console.log(data)
+            if (obj.event === 'delete') {
+                //获取浏览器navigator对象的userAgent属性（浏览器用于HTTP请求的用户代理头的值）
+                var info = navigator.userAgent;
+                //通过正则表达式的test方法判断是否包含“Mobile”字符串
+                var isPhone = /mobile/i.test(info);
+                //如果包含“Mobile”（是手机设备）则返回true
+                $.confirm({
+                    title: '删除应用',
+                    content: '请注意！你正在<strong style="color:red">删除文件,此操作不可逆</strong>！' + (isPhone ? '' : '按下键盘Y进行下一步操作。'),
+                    type: 'red',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        我点错了: function () { },
+                        确定删除: {
+                            isHidden: isPhone ? false : true, // 隐藏按钮 仅手机端显示该按钮
+                            keys: ['y'],
+                            action: function () {
+                                $.confirm({
+                                    title: '二级密码验证',
+                                    content: '请输入你的二级密码进行身份验证。' + '<br><input type="password" id="secondPssword" autocomplete="off" placeholder="必填" class="layui-input">',
+                                    type: 'red',
+                                    buttons: {
+                                        我点错了: function () { },
+                                        确认删除: function () {
+                                            secondPassword = $("#secondPssword").val();
+                                            ajax({ do: 'deleteFile', secondPassword: secondPassword, filename: data.filename }, function (res) {
+                                                $.alert({
+                                                    title: '成功',
+                                                    content: '文件删除成功',
+                                                    icon: 'fa fa-smile-o',
+                                                    type: 'green',
+                                                    buttons: {
+                                                        ok: function () {
+                                                            layui.table.reload('currentTableId', {});
+                                                        }
+                                                    }
+                                                })
+                                            })
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                })
+            }
+        });
+
+    });
+</script>

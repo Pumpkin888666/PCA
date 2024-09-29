@@ -1,0 +1,140 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main">
+
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加请求转发 </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="jscript:layui.table.reload('currentTableId', {});;"> 刷新表 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <blockquote class="layui-elem-quote">
+            <p>使用请求转发可以让您的服务器和数据更加的<strong style="color: green;">安全</strong>，我们数据<strong style="color: green;">全程加密传输</strong>，可以有效预防不法分子偷取您的核心数据！</p>
+            <p>使用方式：1.调用PCASdk方法，<strong style="color: green;">数据全程加密传输</strong>。2.直接向/rf.php?ol=[out_link]<strong style="color: red;">数据明文传输</strong>。</p>
+            <p>有什么区别？加密解密需要<strong style="color: red;">时间</strong>，大数据或者需要实时传输数据会造成<strong style="color: red;">延迟</strong>！</p>
+            <p>注意！GET的转发方式<strong style="color: red;">不能转发参数</strong>！只有POST的转发方式<strong style="color: green;">会转发你所有的POST参数</strong>。</p>
+            <p>更改目标链接需要人工重新审核！</p>
+        </blockquote>
+
+        <hr>
+        <strong style="color: red;">严禁转发违规链接！否则我们将移交司法机关和封锁所有数据进行处理！</strong>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'table', 'miniPage', 'element'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            miniPage = layui.miniPage;
+
+        // 渲染
+        table.render({
+            elem: '#currentTableId',
+            url: '/ajax.php?do=getRequest-forwarding',
+            toolbar: '#toolbar',
+            response: {
+                code: 0
+            },
+            parseData: function (res) {
+                return {
+                    "code": res.code,
+                    "msg": res.msg,
+                    "count": res.data.count,
+                    "data": res.data.items
+                };
+            },
+            cols: [[
+                { field: 'notes', title: '备注', width: 200 },
+                { field: 'type', title: '转发方法', width: 100 },
+                { field: 'link', title: '目标链接', width: 250 },
+                { field: 'out_link', title: '外放链接信息', width: 300 },
+                { field: 'create_time', title: '创建时间', width: 200 },
+                { field: 'switch', title: '可用状态', width: 100 },
+                { field: 'auditing', title: '人工审核状态', width: 200 },
+                { field: 'use_times', title: '转发次数', width: 120 },
+                { title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center" }
+            ]],
+            page: true,
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            skin: 'line'
+        });
+
+        /**
+         * toolbar事件监听
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            console.log(obj.event)
+            switch (obj.event) {
+                case 'add':
+                    ajaxHtml('创建请求转发', 'addRequest-forwarding.html');
+                    break;
+            }
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            console.log(data)
+            if (obj.event === 'edit') {
+                out_link = data.out_link;
+                ajaxHtml('编辑请求转发', 'editRequest-forwarding.html');
+                return false;
+            } else if (obj.event === 'delete') {
+                //获取浏览器navigator对象的userAgent属性（浏览器用于HTTP请求的用户代理头的值）
+                var info = navigator.userAgent;
+                //通过正则表达式的test方法判断是否包含“Mobile”字符串
+                var isPhone = /mobile/i.test(info);
+                //如果包含“Mobile”（是手机设备）则返回true
+                $.confirm({
+                    title: '删除请求转发',
+                    content: '请注意！你正在<strong style="color:red">删除请求转发[外放链接:' + data.out_link + ']此操作不可逆</strong>！' + (isPhone ? '' : '按下键盘Y进行下一步操作。'),
+                    type: 'red',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        我点错了: function () { },
+                        确定删除: {
+                            isHidden: isPhone ? false : true, // 隐藏按钮 仅手机端显示该按钮
+                            keys: ['y'],
+                            action: function () {
+                                $.confirm({
+                                    title: '二级密码验证',
+                                    content: '请输入你的二级密码进行身份验证。' + '<br><input type="password" id="secondPssword" autocomplete="off" placeholder="必填" class="layui-input">',
+                                    type: 'red',
+                                    buttons: {
+                                        我点错了: function () { },
+                                        确认删除: function () {
+                                            secondPassword = $("#secondPssword").val();
+                                            ajax({ do: 'deleteRequest-forwarding', secondPassword: secondPassword, out_link: data.out_link }, function (res) {
+                                                $.alert({
+                                                    title: '成功',
+                                                    content: '远程转发删除成功',
+                                                    icon: 'fa fa-smile-o',
+                                                    type: 'green',
+                                                    buttons: {
+                                                        ok: function () {
+                                                            layui.table.reload('currentTableId', {});
+                                                        }
+                                                    }
+                                                })
+                                            })
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                })
+            }
+        });
+
+    });
+</script>

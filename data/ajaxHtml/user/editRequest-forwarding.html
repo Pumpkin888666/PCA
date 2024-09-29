@@ -1,0 +1,80 @@
+<form class="layui-form" action="" lay-filter="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <textarea type="text" name="notes" id="notes" lay-filter="notes" autocomplete="off" placeholder="必填 <=20字符"
+                class="layui-input"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+
+        <label class="layui-form-label">转发状态</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="rfswitch" id="rfswitch" lay-filter="rfswitch" lay-skin="switch" lay-text="开|关"
+                checked>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">转发目标</label>
+        <div class="layui-input-block">
+            <input type="text" name="link" id="link" lay-filter="link" autocomplete="off" placeholder="必填 <=100字符"
+                class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">转发类型</label>
+        <div class="layui-input-block">
+            <select name="type" id="type" lay-filter="type">
+                <option value="get">GET</option>
+                <option value="post">POST[我们会转发您所附带的所有POST参数]</option>
+            </select>
+        </div>
+    </div>
+
+</form>
+<button class="layui-btn" id="submitBtn">立即提交</button>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form;
+        form.render();
+        ajax({ do: 'getRequest-forwardingInformation', out_link: out_link }, function (res) {
+            form.val('form', {
+                'rfswitch': res.data.rfswitch,
+                'link': res.data.link,
+                'notes': res.data.notes,
+                'type': res.data.type
+            });
+        });
+    });
+    $("#submitBtn").click(function () {
+        Switch = $("#rfswitch").prop('checked') ? 1 : 0;
+        link = $("#link").val();
+        notes = $("#notes").val();
+        type = $("#type").val();
+        if (notes.length > 20 || notes.length <= 0 || link.length <= 0) {
+            $.alert({
+                title: 'Warn',
+                content: '参数不合规！',
+                type: 'red',
+                icon: 'fa fa-exclamation-circle',
+                buttons: {
+                    关闭: function () { }
+                }
+            })
+            return false;
+        }
+        ajax({ do: 'setRequest-forwardingInformation', type: type, switch: Switch, notes: notes, link: link, out_link: out_link }, function (res) {
+            $.alert({
+                title: '成功',
+                content: '提交成功',
+                type: 'green',
+                icon: 'fa fa-smile-o',
+                buttons: {
+                    ok: function () {
+                        layui.table.reload('currentTableId', {});
+                    }
+                }
+            })
+        })
+    })
+</script>

@@ -1,0 +1,65 @@
+<blockquote class="layui-elem-quote layui-text">
+    建议使用电脑打开，移动端可能造成显示异常，或浏览器UA设置为PC。
+    <a href="https://cn.bing.com/search?q=手机浏览器UA如何设置成PC">如何设置？</a>
+</blockquote>
+<form class="layui-form" action="" layui-filter="form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">转发备注</label>
+        <div class="layui-input-block">
+            <input type="text" id="notes" autocomplete="off" placeholder="必填 <=20字符" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">转发目标</label>
+        <div class="layui-input-block">
+            <input type="text" id="link" autocomplete="off" placeholder="[请不要添加https://.../ 并保证你的网址支持https]必填 <=100字符" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">转发类型</label>
+        <div class="layui-input-block">
+            <select name="type" id="type" lay-filter="type">
+                <option value="">请选择转发类型</option>
+                <option value="get">GET</option>
+                <option value="post">POST[我们会转发您所附带的所有POST参数]</option>
+            </select>
+        </div>
+    </div>
+</form>
+<button class="layui-btn" id="submitBtn">立即提交</button>
+<script>
+    layui.use(['form'], function () {
+        var form = layui.form
+        form.render();
+    });
+    $("#submitBtn").click(function () {
+        type = $("#type").val();
+        link = $("#link").val();
+        notes = $("#notes").val();
+        if (link.length < 1 && type == "" && notes.length < 1) {
+            $.alert({
+                title: 'Warn',
+                content: '请填写完整参数！',
+                icon: 'fa fa-exclamation-circle',
+                type: 'red',
+                buttons: {
+                    关闭: function () { }
+                }
+            })
+            return false;
+        }
+        ajax({ do: 'addRequest-forwarding', type: type, link: link, notes: notes }, function (res) {
+            $.alert({
+                title: '成功',
+                content: '远程转发添加成功',
+                icon: 'fa fa-smile-o',
+                type: 'green',
+                buttons: {
+                    ok: function () {
+                        layui.table.reload('currentTableId', {});
+                    }
+                }
+            })
+        })
+    })
+</script>

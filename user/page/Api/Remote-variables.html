@@ -1,0 +1,131 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main">
+
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加变量 </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" onclick="jscript:layui.table.reload('currentTableId', {});;"> 刷新表 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <hr>
+        <blockquote class="layui-elem-quote">
+            <p>使用思路：每个变量对应一个功能开关，变量值可以作为这个功能的总开关。</p>
+        </blockquote>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'table', 'miniPage', 'element'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            miniPage = layui.miniPage;
+
+        // 渲染
+        table.render({
+            elem: '#currentTableId',
+            url: '/ajax.php?do=getRemoteVariables',
+            toolbar: '#toolbar',
+            response: {
+                code: 0
+            },
+            parseData: function (res) {
+                return {
+                    "code": res.code,
+                    "msg": res.msg,
+                    "count": res.data.count,
+                    "data": res.data.items
+                };
+            },
+            cols: [[
+                { field: 'name', title: '变量名', width: 120 },
+                { field: 'content', title: '变量内容', width: 300 },
+                { field: 'notes', title: '备注', width: 300 },
+                { field: 'create_time', title: '创建时间', width: 300 },
+                { field: 'switch', title: '状态', width: 300 },
+                { title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center" }
+            ]],
+            page: true,
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            skin: 'line'
+        });
+
+        /**
+         * toolbar事件监听
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            console.log(obj.event)
+            switch (obj.event) {
+                case 'add':
+                    ajaxHtml('创建远程变量', 'addRemote-variables.html');
+                    break;
+            }
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            console.log(data)
+            if (obj.event === 'edit') {
+                name = data.name;
+                ajaxHtml('编辑远程变量', 'editRemote-variables.html');
+                return false;
+            } else if (obj.event === 'delete') {
+                //获取浏览器navigator对象的userAgent属性（浏览器用于HTTP请求的用户代理头的值）
+                var info = navigator.userAgent;
+                //通过正则表达式的test方法判断是否包含“Mobile”字符串
+                var isPhone = /mobile/i.test(info);
+                //如果包含“Mobile”（是手机设备）则返回true
+                $.confirm({
+                    title: '删除远程变量',
+                    content: '请注意！你正在<strong style="color:red">删除远程变量[变量名:' + data.name + ']此操作不可逆</strong>！' + (isPhone ? '' : '按下键盘Y进行下一步操作。'),
+                    type: 'red',
+                    icon: 'fa fa-exclamation-circle',
+                    buttons: {
+                        我点错了: function () { },
+                        确定删除: {
+                            isHidden: isPhone ? false : true, // 隐藏按钮 仅手机端显示该按钮
+                            keys: ['y'],
+                            action: function () {
+                                $.confirm({
+                                    title: '二级密码验证',
+                                    content: '请输入你的二级密码进行身份验证。' + '<br><input type="password" id="secondPssword" autocomplete="off" placeholder="必填" class="layui-input">',
+                                    type: 'red',
+                                    buttons: {
+                                        我点错了: function () { },
+                                        确认删除: function () {
+                                            secondPassword = $("#secondPssword").val();
+                                            ajax({ do: 'deleteRemote-variables', secondPassword: secondPassword, name: data.name }, function (res) {
+                                                $.alert({
+                                                    title: '成功',
+                                                    content: '远程变量删除成功',
+                                                    icon: 'fa fa-smile-o',
+                                                    type: 'green',
+                                                    buttons: {
+                                                        ok: function () {
+                                                            layui.table.reload('currentTableId', {});
+                                                        }
+                                                    }
+                                                })
+                                            })
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                })
+            }
+        });
+
+    });
+</script>

@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="/user/lib/Puploader/Puploader.css">
+<div class="layuimini-main">
+    <blockquote class="layui-elem-quote">
+        仅供上传文件去给<strong style="color:green">软件更新、软件Logo</strong>使用，发现<strong
+            style="color:red">当成网盘使用、上传违规图片等</strong>，直接封号封IP。
+        <br>
+        上传大文件保存速度很<strong style="color:red">慢</strong>，请耐心等待。
+    </blockquote>
+    <div id="Puploader">
+        <h1 id="Puploader_title">Puploader</h1>
+        <div class="Puploader_progress">
+            <div></div>
+        </div>
+        Progress:<span id="Puploader_progress_span">0</span><span style="color: green;">%</span>
+        <br>
+        Speed:<span id="Puploader_progress_speed">0</span>
+        <label for="Puploader_fileInput" id="Puploader_fileChoose">
+            选择文件
+        </label>
+        <input type="file" id="Puploader_fileInput" name="file">
+    </div>
+</div>
+<script src="/user/lib/spark-md5/spark-md5.min.js"></script>
+<script src="/user/lib/Puploader/Puploader.js"></script>

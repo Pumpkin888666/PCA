@@ -1,0 +1,63 @@
+#Puploader {
+    min-width: 100px;
+    min-height: 100px;
+    background-color: #ececec;
+    margin: 0 auto;
+    box-shadow: 2px 2px 12px 2px #ccc;
+    border-radius: 7px;
+    width: 300px;
+    height: 200px;
+}
+
+#Puploader_title {
+    color: black;
+    text-align: center;
+}
+
+#Puploader_fileInput {
+    display: none;
+}
+
+#Puploader_fileChoose {
+    width: 87px;
+    height: 22px;
+    font-size: 14px;
+    line-height: 1.15;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin-left: 30%;
+    transition: all 0.5s;
+    white-space: nowrap;
+    background-color: #409eff;
+    color: white;
+    border: 1px solid #409eff;
+    margin-top: 10%;
+}
+
+.Puploader_progress {
+    width: auto;
+    height: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin: 10px 0px;
+    overflow: hidden;
+}
+
+/* 初始状态设置进度条宽度为0px */
+.Puploader_progress>div {
+    width: 0px;
+    height: 100%;
+    background-color: yellowgreen;
+    transition: all .3s ease;
+}
+
+#Puploader_progress_speed {
+    color: green;
+}
+
+#Puploader_progress_span {
+    color: green;
+}

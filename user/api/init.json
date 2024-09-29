@@ -1,0 +1,105 @@
+{
+    "homeInfo": {
+        "title": "首页",
+        "href": "page/home.html?t=1"
+    },
+    "logoInfo": {
+        "title": "PCA用户中心",
+        "image": "images/logo.png",
+        "href": ""
+    },
+    "menuInfo": [
+        {
+            "title": "API",
+            "icon": "fa fa-address-book",
+            "href": "",
+            "target": "_self",
+            "child": [
+                {
+                    "title": "API设置",
+                    "icon": "fa fa-cog",
+                    "href": "page/Api/apiset.html",
+                    "target": "_self"
+                },
+                {
+                    "title": "软件管理",
+                    "icon": "fa fa-cube",
+                    "href": "",
+                    "target": "_self",
+                    "child": [
+                        {
+                            "title": "软件列表",
+                            "icon": "fa fa-cubes",
+                            "href": "page/Api/AppManage/applist.html",
+                            "target": "_self"
+                        },
+                        {
+                            "title": "版本列表",
+                            "icon": "fa fa-list-ol",
+                            "href": "page/Api/AppManage/versionlist.html",
+                            "target": "_self"
+                        }
+                    ]
+                },
+                {
+                    "title": "授权管理",
+                    "icon": "fa fa-credit-card",
+                    "href": "page/Api/authlist.html",
+                    "target": "_self"
+                },
+                {
+                    "title": "远程功能",
+                    "icon": "fa fa-cloud",
+                    "href": "",
+                    "target": "_self",
+                    "child": [
+                        {
+                            "title": "远程变量",
+                            "icon": "fa fa-info",
+                            "href": "page/Api/Remote-variables.html",
+                            "target": "_self"
+                        },
+                        {
+                            "title": "请求转发",
+                            "icon": "fa fa-share",
+                            "href": "page/Api/Request-forwarding.html",
+                            "target": "_self"
+                        }
+                    ]
+                },
+                {
+                    "title": "资源下载",
+                    "icon": "fa fa-cloud-download",
+                    "href": "page/resource-download.html",
+                    "target": "_self"
+                },
+                {
+                    "title": "计划任务",
+                    "icon": "fa fa-tasks",
+                    "href": "page/autowork.html",
+                    "target": "_self"
+                }
+            ]
+        },
+        {
+            "title": "文件管理",
+            "icon": "fa fa-file-o",
+            "href": "",
+            "target": "_self",
+            "child": [
+                {
+                    "title": "上传文件",
+                    "icon": "fa fa-cloud-upload",
+                    "href": "page/upload/upload.html",
+                    "target": "_self"
+                },
+                {
+                    "title": "文件列表",
+                    "icon": "fa fa-list-ul",
+                    "href": "page/upload/filelist.html",
+                    "target": "_self"
+                }
+            ]
+        }
+    ]
+}
